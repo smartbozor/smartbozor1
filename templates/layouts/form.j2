@@ -1,0 +1,21 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+            <form method="post" autocomplete="off">
+                {% csrf_token %}
+
+                {{ bootstrap_form(form) }}
+
+                {% block form_button %}
+                    <button type="submit" class="btn btn-primary d-block w-100">
+                        <i class="bi bi-floppy"></i>
+                        {{ _("Saqlash") }}
+                    </button>
+                {% endblock %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

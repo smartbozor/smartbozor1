@@ -1,0 +1,17 @@
+<div class="bg-white shadow py-3 px-4 mb-4 rounded d-flex align-items-center">
+    <strong>{{ PAGE_TITLE|default(TITLE) }}</strong>
+    <div class="dropdown ms-auto">
+        <span class="me-2">{{ request.user.last_name }} {{ request.user.first_name }}</span>
+        <button type="button" class="btn btn-primary py-1 border-0 px-2 rounded-circle" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right border-0 shadow rounded">
+            <div class="dropdown-item">
+                <form method="post" action="{{ url("account:logout") }}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link p-0 text-decoration-none w-100 text-start">{{ _("Chiqish") }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

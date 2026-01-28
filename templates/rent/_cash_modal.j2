@@ -1,0 +1,25 @@
+<div class="modal fade" id="id-cash-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <h5 class="modal-header">
+                {{ _("Naqd to'lov") }}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </h5>
+            <div class="modal-body">
+                <form method="post" action="" id="id-cash-form" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="mb-3 text-center">
+                        <div class="title fs-5"></div>
+                        <input type="hidden" name="number" class="number" value="0">
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center">
+                            <span class="spinner-border spinner-border-sm me-2 d-none"></span>
+                            <span class="btn_title"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="modal fade" id="id-cash-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <h5 class="modal-header">
+                {{ _("Naqd to'lov") }}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </h5>
+            <div class="modal-body">
+                <form method="post" action="" id="id-cash-form" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="mb-3 text-center">
+                        <div class="title fs-5"></div>
+                        <input type="hidden" name="status" class="status" value="">
+                        <input type="hidden" name="parking" class="parking" value="">
+                        <input type="hidden" name="amount" class="amount" value="">
+                        <input type="hidden" name="order_id" class="order_id" value="">
+                    </div>
+                    <div class="input-group mb-3 parent-el">
+                        <input type="text" class="form-control payment_amount" name="payment_amount"
+                               placeholder="{{ _("Qancha to'ladi?") }}"/>
+                        <div class="input-group-text">{{ _("so'm") }}</div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center">
+                            <span class="spinner-border spinner-border-sm me-2 d-none"></span>
+                            <span class="btn_title">{{ _("To'landi") }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

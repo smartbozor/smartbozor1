@@ -1,0 +1,136 @@
+<div class="sidebar vh-100 overflow-y-auto shadow p-3 bg-white position-fixed top-0 start-0">
+    <a href="{{ url("main:index") }}"
+       class="d-flex align-items-center justify-content-center text-primary logo text-decoration-none fs-5 mb-4">
+        <i class="bi bi-bar-chart-fill me-2"></i>
+        smart bozor
+    </a>
+
+    <div class="px-3 py-2 rounded {{ is_active(request, "dashboard:index") }}">
+        <a href="{{ url("dashboard:index") }}" class="text-decoration-none d-flex align-items-center">
+            <i class="bi bi-speedometer2 me-2"></i>
+            {{ _("Umumiy hisobot") }}
+        </a>
+    </div>
+
+    {% if perms.report.can_view_total_revenue %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "report:total-revenue") }}">
+            <a href="{{ url("report:total-revenue") }}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                {{ _("Jami daromad") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.report.can_view_total_scan %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "report:total-scan") }}">
+            <a href="{{ url("report:total-scan") }}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-qr-code-scan me-2"></i>
+                {{ _("Jami skan") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.payment.view_click %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "report:total-click") }}">
+            <a href="{{ url("report:total-click") }}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-wallet2 me-2"></i>
+                {{ _("Click hisobot") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.stall.view_stall and ALLOWED_BAZAAR %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "stall:list-bazaar,stall:list") }}">
+            <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("stall:list", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("stall:list-bazaar") }}{% endif %}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-dice-4 me-2"></i> {{ _("Rastalar ro'yxati") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.shop.view_shop and ALLOWED_BAZAAR %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "shop:list-bazaar,shop:list") }}">
+            <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("shop:list", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("shop:list-bazaar") }}{% endif %}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-shop me-2"></i> {{ _("Do'konlar ro'yxati") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.rent.view_thing and ALLOWED_BAZAAR %}
+        <div>
+            <div class="px-3 py-2 rounded d-flex  {{ is_active(request, "rent:list,rent:list-bazaar", "text-primary") }}">
+                <i class="bi bi-cart3 me-2"></i>
+                {{ _("Ijara buyumlar") }}
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </div>
+            {% for thing in THINGS %}
+                <div class="px-3 ps-4 py-2 rounded {{ is_active(request, "rent:list-bazaar,rent:list", "active", thing.id == pk) }}">
+                    <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("rent:list", ALLOWED_BAZAAR[0].id, thing.id) }}{% else %}{{ url("rent:list-bazaar", thing.id) }}{% endif %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="bi bi-arrow-right me-2"></i> {{ thing }}
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if perms.parking.view_parking and ALLOWED_BAZAAR %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "parking:list-bazaar,parking:list") }}">
+            <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("parking:list", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("parking:list-bazaar") }}{% endif %}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-car-front me-2"></i> {{ _("Avtoturargohlar") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if perms.camera.view_camera and ALLOWED_BAZAAR %}
+        <div class="px-3 py-2 rounded {{ is_active(request, "camera:list-bazaar,camera:list,camera:preview,camera:roi") }}">
+            <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("camera:list", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("camera:list-bazaar") }}{% endif %}"
+               class="text-decoration-none d-flex align-items-center">
+                <i class="bi bi-camera-video me-2"></i> {{ _("Kameralar") }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if (perms.ai.add_stalldataset or perms.ai.change_stalldataset) and ALLOWED_BAZAAR %}
+        <div>
+            <div class="px-3 py-2 rounded d-flex  {{ is_active(request, "rent:list,rent:list-bazaar", "text-primary") }}">
+                <i class="bi bi-cpu me-2"></i>
+                {{ _("AI") }}
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </div>
+        </div>
+        {% if perms.ai.add_stalldataset %}
+            <div class="px-3 ps-4 py-2 rounded {{ is_active(request, "ai:stall-mark-bazaar,ai:stall-mark") }}">
+                <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("ai:stall-mark", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("ai:stall-mark-bazaar") }}{% endif %}"
+                   class="text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-arrow-right me-2"></i>  {{ _("Rastlarni belgilash") }}
+                </a>
+            </div>
+        {% endif %}
+
+        {% if perms.ai.change_stalldataset %}
+            <div class="px-3 ps-4 py-2 rounded {{ is_active(request, "ai:stall-mark-moderate-bazaar,ai:stall-mark-moderate") }}">
+                <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("ai:stall-mark-moderate", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("ai:stall-mark-moderate-bazaar") }}{% endif %}"
+                   class="text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-arrow-right me-2"></i> {{ _("Rast bandligini tekshirish") }}
+                </a>
+            </div>
+            <div class="px-3 ps-4 py-2 rounded {{ is_active(request, "ai:stall-mark-update-bazaar,ai:stall-mark-update") }}">
+                <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("ai:stall-mark-update", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("ai:stall-mark-update-bazaar") }}{% endif %}"
+                   class="text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-arrow-right me-2"></i> {{ _("Rast bandligini tahrirlash") }}
+                </a>
+            </div>
+            <div class="px-3 ps-4 py-2 rounded {{ is_active(request, "ai:stall-test-bazaar,ai:stall-test") }}">
+                <a href="{% if ALLOWED_BAZAAR|length==1 %}{{ url("ai:stall-test", ALLOWED_BAZAAR[0].id) }}{% else %}{{ url("ai:stall-test-bazaar") }}{% endif %}"
+                   class="text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-arrow-right me-2"></i> {{ _("AI testlash") }}
+                </a>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

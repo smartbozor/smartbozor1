@@ -1,0 +1,36 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <form method="get" class="d-flex gap-3 mb-3">
+        {{ filter.form.s }}
+        {{ filter.form.e }}
+        <button type="submit" class="btn btn-primary">{{ _("Ko'rish") }}</button>
+    </form>
+    <hr/>
+    {{ start|date("d.m.Y") }} - {{ end|date("d.m.Y") }}
+    <hr/>
+    <table class="table table-bordered table-hover table-striped m-0">
+        <tbody>
+        {% set total=namespace(amount=0, n=0) %}
+        {% for row in data %}
+            {% set total.amount = total.amount + row.total %}
+            {% set total.n = total.n + 1 %}
+            <tr>
+                <td>{{ row.date }}</td>
+                <td>{{ row.total|som }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td>{{ _("Ma'lumot mavjud emas") }}</td>
+            </tr>
+        {% endfor %}
+
+        {% if total.n > 0 %}
+            <tr>
+                <td class="bg-dark text-white">{{ _("JAMI") }}</td>
+                <td class="bg-dark text-white">{{ total.amount|som }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'layouts/auth.j2' %}
+
+{% set PAGE_TITLE %}{{ bazaar }} » {{ _("Do'konlar ro'yxati") }}{% endset %}
+
+{% block page_content %}
+    <div class="mb-3">
+        <form method="get" action="" class="d-flex">
+            <div class="input-group">
+                {{ filter.form.number }}
+
+                <button type="submit" class="btn btn-primary text-nowrap">
+                    <i class="bi bi-search me-2"></i>
+                    {{ _("Qidirish") }}
+                </button>
+                {% if filter.form.is_bound %}
+                    <a href="?" class="btn btn-danger">
+                        <i class="bi bi-x"></i>
+                    </a>
+                {% endif %}
+                <a href="?{{ request.GET.urlencode() }}&export=1" class="btn btn-info">
+                    <i class="bi bi-download"></i>
+                </a>
+                {% if perms.shop.change_shop %}
+                    <a href="{{ url("shop:import", bazaar.id) }}" class="btn btn-info">
+                        <i class="bi bi-upload"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr class="table-dark">
+            <td>№</td>
+            <td>{{ _("Tadbirkor") }}</td>
+            <td class="text-center">{{ _("Ijara narxi") }}</td>
+            <td class="text-center">{{ _("Qarzdorligi") }}</td>
+            <td>{{ _("Ushbu oyda to'lagan") }}</td>
+            <td style="width: 1%"></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in object_list %}
+            {% set total_rent = total_rent_by_shop[row.id]|default(0) %}
+            {% set total_payment = total_payment_by_shop[row.id]|default(0) %}
+            {% set balance = total_payment - total_rent %}
+            <tr {% if request.GET.hl|default(0)|int == row.id %}class="table-success"{% endif %}>
+                <td>{{ row.number }}</td>
+                <td>{{ row.owner|default("-", true) }}</td>
+                <td class="text-center">{{ row.rent_price|som }}</td>
+                <td class="text-center">
+                    <div class="badge {% if balance < 0 %}bg-danger{% elif balance > 0 %}bg-success{% else %}bg-dark{% endif %}">
+                        {{ balance|som }}
+                    </div>
+                </td>
+                <td>{% for pm, ta in current_month_payment_by_shop[row.id] -%}
+                    <small class="d-block">{{ pm|payment_method_display }}: {{ ta|som }}</small>
+                {%- else -%}
+                    -
+                {%- endfor %}</td>
+                <td class="text-nowrap text-end">
+                    {% if perms.shop.add_shoppayment and bazaar.is_allow_cash %}
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                data-title="{{ _("Magazin № {0}").format(row.number) }}"
+                                data-shop="{{ row.id }}"
+                                data-pk="{{ row.id }}"
+                                class="btn btn-success btn-sm py-1">
+                            <i class="bi bi-cash"></i> {{ _("Naqd") }}
+                        </button>
+                    {% endif %}
+                    <a href="{{ url("shop:qr-code", row.id) }}" target="_blank" class="btn btn-info py-1 btn-sm"><i
+                            class="bi bi-qr-code"></i></a>
+                    {% if perms.shop.view_shoppayment %}
+                        <button type="button" data-pk="{{ row.id }}" data-url="?id={{ row.id }}" data-bs-toggle="modal"
+                                data-bs-target="#id-ajax-modal" class="btn btn-dark py-1 btn-sm">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">{{ _("Birorta ham magazin topilmadi") }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ bootstrap_pagination(page_obj, extra=request.GET.urlencode()) }}
+
+    {% include "shop/_cash_modal.j2" %}
+    {% include "include/ajax-modal.j2" %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+{% endblock %}

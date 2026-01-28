@@ -1,0 +1,21 @@
+{% extends 'layouts/auth.j2' %}
+
+{% set PAGE_TITLE %}{{ _("Bozorni tanlang") }}{% endset %}
+
+{% block page_content %}
+    <div class="list-group">
+        {% for row in ALLOWED_BAZAAR %}
+            <a href="{% if pk -%}{{ url(route, row.id, pk) }}{% else %}{{ url(route, row.id) }}{% endif %}" class="list-group-item py-3 d-flex align-items-center">
+                {{ row.district.region }} &raquo; {{ row.district }} &raquo; {{ row }}
+
+                <span class="ms-auto"></span>
+                {% if extra and row.id in extra %}
+                    <span class="ps-3">{{ extra[row.id] }}</span>
+                {% endif %}
+                <span class="ms-3">{% if show_online %}{% if row.is_online %}🟢{% else %}🔴{% endif %}{% endif %}</span>
+            </a>
+
+        {% else %}
+        {% endfor %}
+    </div>
+{% endblock %}

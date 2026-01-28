@@ -1,0 +1,95 @@
+{% extends 'layouts/auth.j2' %}
+
+{% set tab_limit = 3 %}
+{% block before_page_content %}
+    <div class="nav nav-tabs">
+        <div class="nav-item">
+            <a href="{{ url("dashboard:index") }}" class="nav-link {% if not object %}active{% endif %}">
+                {% if ALLOWED_BAZAAR|length == 1 %}
+                    {{ ALLOWED_BAZAAR[0] }}
+                {% else %}
+                    {{ _("Umumiy hisobot") }}
+                {% endif %}
+            </a>
+        </div>
+        {% if ALLOWED_BAZAAR|length > 1 %}
+            {% for row in ALLOWED_BAZAAR[:tab_limit] %}
+                <div class="nav-item">
+                    <a href="{{ url("dashboard:index-bazaar", row.id) }}"
+                       class="nav-link {% if object and object.id == row.id %}active{% endif %}">{{ row }}</a>
+                </div>
+            {% endfor %}
+            {% if ALLOWED_BAZAAR|length > tab_limit %}
+                {% set active = (ALLOWED_BAZAAR[tab_limit:] | selectattr("id", "equalto", object.id) | first) %}
+                <div class="dropdown">
+                    <a class="nav-link {% if active %}active{% endif %}" type="button" data-bs-toggle="dropdown">
+                        {% if active -%}
+                            {{ active }}
+                        {%- else -%}
+                            {{ _("Qolgan bozorlar") }}
+                        {%- endif %}
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded">
+                        {% for row in ALLOWED_BAZAAR[tab_limit:] %}
+                            <a href="{{ url("dashboard:index-bazaar", row.id) }}"
+                               class="dropdown-item {% if row.id == object.id %}active{% endif %}">{{ row }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block page_container %}
+    {% if ALLOWED_BAZAAR %}
+        {% set bazaar = None %}
+        {% if object %}
+            {% set bazaar = (ALLOWED_BAZAAR | selectattr("id", "equalto", object.id) | first) %}
+        {% endif %}
+
+        {% if bazaar %}
+            <table class="table m-0">
+                <tbody>
+                <tr>
+                    <th style="width: 1%" class="text-nowrap">{{ _("To'liq manzil") }}:</th>
+                    <td>{{ bazaar.district.region }} » {{ bazaar.district }} » {{ object }}</td>
+                </tr>
+                <tr>
+                    <th class="text-nowrap">
+                        {% if object.working_days_display|length <= 1 -%}
+                            {{ _("Ish kuni") }}
+                        {%- else -%}
+                            {{ _("Ish kunlari") }}
+                        {%- endif %}:
+                    </th>
+                    <td>{% if not object.working_days_display -%}
+                        <span class="text-danger">{{ _("Ishlamaydi") }}</span>
+                    {%- else -%}
+                        {{ ", ".join(object.working_days_display) }}
+                    {%- endif %}</td>
+                </tr>
+                <tr>
+                    <th class="text-nowrap">
+                        {% if object.payment_methods_display|length <= 1 %}{{ _("To'lov turi") }}{% else %}
+                            {{ _("To'lov turlari") }}{% endif %}:
+                    </th>
+                    <td>
+                        {% if not  object.payment_methods_display -%}
+                            <span class="text-danger">{{ _("Mavjud emas") }}</span>
+                        {%- else -%}
+                            {{ ", ".join(object.payment_methods_display) }}
+                        {%- endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% include 'dashboard/_report.j2' %}
+    {% else %}
+        <div class="alert alert-warning">{{ _("Sizda hisobotni ko'rishga huquq yetarli emas") }}</div>
+    {% endif %}
+{% endblock %}

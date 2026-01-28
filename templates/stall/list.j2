@@ -1,0 +1,121 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block before_page_content %}
+    {% if total %}
+        {% include 'stall/_report.j2' %}
+    {% endif %}
+{% endblock %}
+
+{% block page_content %}
+    <div class="mb-3">
+        <form method="get" action="" class="d-flex">
+            <div class="input-group">
+                {{ filter.form.number }}
+                {{ filter.form.is_paid }}
+
+                <button type="submit" class="btn btn-primary text-nowrap">
+                    <i class="bi bi-search me-2"></i>
+                    {{ _("Qidirish") }}
+                </button>
+                {% if filter.form.is_bound %}
+                    <a href="?" class="btn btn-danger">
+                        <i class="bi bi-x"></i>
+                    </a>
+                {% endif %}
+                <a href="?{{ request.GET.urlencode() }}&export=1" class="btn btn-info">
+                    <i class="bi bi-download"></i>
+                </a>
+                {% if perms.stall.change_stall %}
+                    <a href="{{ url("stall:import", bazaar.id) }}" class="btn btn-info">
+                        <i class="bi bi-upload"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr class="table-dark">
+            <td>{{ _("Rasta raqami") }}</td>
+            <td>{{ _("Narxi") }}</td>
+            <td>{{ _("Badlik holati") }}</td>
+            <td>{{ _("To'lov holati") }}</td>
+            <td>{{ _("To'lov turi") }}</td>
+            <td style="width: 1%"></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in object_list %}
+            <tr {% if request.GET.hl|default(0)|int == row.id %}class="table-success"{% endif %}>
+                <td>{{ row.number }}</td>
+                <td>{{ row.price|som }}</td>
+                <td>
+                    {%- if not row.is_occupied_today -%}
+                        <span class="badge bg-danger badge-occupied">{{ _("band emas") }}</span>
+                    {%- else -%}
+                        <span class="badge bg-success badge-occupied">{{ _("band") }}</span>
+                    {%- endif -%}
+
+                    {% if perms.stall.change_stallstatus and not row.is_paid_today %}
+                        <button type="button" data-occupied="{{ row.id }}" class="btn btn-warning py-1 btn-sm">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not row.is_paid_today %}
+                        {% if row.payment_progress_today > 0 %}
+                            <span class="badge bg-info">{{ _("jarayonda") }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">{{ _("to'lanmagan") }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-success">{{ _("to'langan") }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {{ row.payment_method_today|payment_method_display }}
+                </td>
+                <td class="text-nowrap text-end">
+                    {% if not row.is_paid_today and perms.stall.add_stallstatus and bazaar.is_allow_cash and row.payment_progress_today == 0 %}
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                data-title="{{ _("Rasta № {0}").format(row.number) }}"
+                                data-btn_title="{{ _("{0} so'm to'landi").format(row.price|intcomma) }}"
+                                data-stall="{{ row.id }}"
+                                data-pk="{{ row.id }}"
+                                class="btn btn-success btn-sm py-1">
+                            <i class="bi bi-cash"></i> {{ _("Naqd") }}
+                        </button>
+                    {% endif %}
+                    <a href="{{ url("stall:qr-code", row.id) }}" target="_blank" class="btn btn-info py-1 btn-sm"><i
+                            class="bi bi-qr-code"></i></a>
+
+                    {% if perms.stall.view_stallstatus %}
+                        <button type="button" data-url="?id={{ row.id }}" data-bs-toggle="modal"
+                                data-bs-target="#id-ajax-modal" class="btn btn-dark py-1 btn-sm">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">{{ _("Birorta ham rasta topilmadi") }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ bootstrap_pagination(page_obj, extra=request.GET.urlencode()) }}
+
+    {% include "stall/_cash_modal.j2" %}
+    {% include "include/ajax-modal.j2" %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+    {% if perms.stall.change_stallstatus %}
+        <script src="{{ static("js/stall-occupied.min.js") }}?{{ STATIC_VERSION }}"></script>
+    {% endif %}
+{% endblock %}

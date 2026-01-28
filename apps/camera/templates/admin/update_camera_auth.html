@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ _("Saqlash") }}" class="default">
+
+        <a href="{% url "admin:camera_camera_changelist" %}" class="default">{{ _("Orqaga") }}</a>
+    </form>
+
+    <div style="margin-top: 1rem;"></div>
+    <h1>{{ cameras.0.bazaar }}</h1>
+    <table class="mt-3">
+        <tbody>
+        {% for row in cameras %}
+            <tr>
+                <td>{{ row.device_sn }}</td>
+                <td>{{ row.camera_ip }}</td>
+                <td>{{ row.username }}</td>
+                <td>{{ row.password }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+
+    <div class="d-flex">
+        {% include 'include/sidebar.j2' %}
+
+        <div class="content p-4 flex-grow-1">
+            {% include 'include/navbar.j2' %}
+
+            {% block before_page_content %}{% endblock %}
+
+            {% block page_container %}
+                <div class="bg-white p-4 shadow rounded">
+                    {{ bootstrap_messages() }}
+                    {% block page_content %}{% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block after_page_content %}{% endblock %}
+        </div>
+    </div>
+
+{% endblock %}

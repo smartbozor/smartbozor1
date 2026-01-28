@@ -1,0 +1,61 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <div class="d-inline-block">
+        <div class="mb-2 d-flex">
+            <div class="btn-group" id="id_buttons">
+                <button type="button" class="btn btn-primary btn-sm py-1" data-type="0"
+                        data-label="{{ _("Rasta raqami") }}">{{ _("Rasta") }}</button>
+                <button type="button" class="btn btn-primary btn-sm py-1" data-type="1"
+                        disabled>{{ _("Xojatxona") }}</button>
+            </div>
+            <div id="id_json_roi" class="ms-3"></div>
+            <button type="button" class="btn btn-success ms-auto btn-sm py-1 text-white" id="id_btn_save">
+                <i class="bi bi-floppy-fill"></i>
+            </button>
+        </div>
+        <div class="border d-inline-block">
+            <div id="id_loading" class="p-5 text-center">
+                <div class="spinner-border"></div>
+            </div>
+            <div class="position-relative d-none">
+                {% if object.screenshot %}
+                    <div class="position-absolute start-0 top-0 bottom-0 end-0 contain-image"
+                         style="background-image: url('{{ object.screenshot.url }}')"></div>
+                {% endif %}
+                <canvas id="id-camera-roi" class="w-100"></canvas>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            {{ _("ROI json") }}
+            <input type="file" class="form-control p-2" id="id_input_load_json" accept=".json" multiple>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" id="id_assign_modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="" autocomplete="off">
+                        <label for="id_assign_input" class="control-label"></label>
+                        <input type="text" class="form-control" id="id_assign_input">
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">{{ _("Saqlash") }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="application/json" id="id_saved">{{ object.roi|tojson }}</script>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@6.9.1/dist/index.min.js"></script>
+    <script src="{{ static("js/camera-roi.min.js") }}?{{ STATIC_VERSION }}"></script>
+{% endblock %}

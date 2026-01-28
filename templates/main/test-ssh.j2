@@ -1,0 +1,25 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <h1>{{ object }} [{{ object.server_ip }}:{{ object.server_port }}]</h1>
+        <table class="table table-striped table-hover table-bordered">
+            <tr>
+                <td>Success</td>
+                <td>{{ success|yesno("🟢,🔴") }}</td>
+            </tr>
+            <tr>
+                <td>Result</td>
+                <td>{{ result }}</td>
+            </tr>
+            <tr>
+                <td>Return code</td>
+                <td>{{ return_code }}</td>
+            </tr>
+            <tr>
+                <td>Message</td>
+                <td>{{ msg }}</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="vh-100 main-bg position-reletive">
+        {% if user.is_authenticated %}
+            <a href="{{ url("dashboard:index") }}" class="bg-primary fs-4 d-flex align-items-center justify-content-center rounded-circle position-absolute main-link">
+                <i class="bi bi-speedometer2"></i>
+            </a>
+        {% else %}
+            <a href="{{ url("account:login") }}" class="bg-primary fs-4 d-flex align-items-center justify-content-center rounded-circle position-absolute main-link">
+                <i class="bi bi-box-arrow-in-right"></i>
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <h1>{{ object }} [{{ object.server_ip }}:{{ object.server_port }}]</h1>
+        <div>Version: {{ version }}</div>
+        <hr/>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% else %}
+            <table class="table table-striped table-hover table-bordered">
+                {% for row in result %}
+                    <tr>
+                        <td>{{ row.device_sn }}</td>
+                        <td>{{ row.mac }}</td>
+                        <td>{{ row.ip }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ _("Bitta ham kamera topilmadi. SADP ni tekshirish kerak.") }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

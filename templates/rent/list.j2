@@ -1,0 +1,74 @@
+{% extends "layouts/auth.j2" %}
+
+{% set PAGE_TITLE %}{{ _("{0}dagi {1}lar").format(bazaar.name, thing.name.lower()) }}{% endset %}
+
+{% block page_content %}
+    {% if not object %}
+        <div class="alert alert-info m-0">{{ _("{0}da {1} mavjud emas").format(
+            bazaar.name,
+            thing.name.lower()
+        ) }}</div>
+    {% else %}
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr class="table-dark">
+                <td>{{ _("{0} raqami").format(thing.name) }}</td>
+                <td>{{ _("Narxi") }}</td>
+                <td>{{ _("Badlik holati") }}</td>
+                <td>{{ _("To'lov holati") }}</td>
+                <td>{{ _("To'lov turi") }}</td>
+                <td style="width: 1%"></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for number in numbers %}
+                {% set ss = thing_status.get(number, None) %}
+                <tr>
+                    <td>{{ number }}</td>
+                    <td>{{ object.price|som }}</td>
+                    <td>{% if ss and ss.is_occupied -%}
+                        <span class="badge bg-success">{{ _("band") }}</span>
+                    {%- else -%}
+                        <span class="badge bg-danger">{{ _("band emas") }}</span>
+                    {%- endif %}</td>
+                    <td>{% if ss and ss.is_paid -%}
+                        <span class="badge bg-success">{{ _("to'langan") }}</span>
+                    {%- elif ss and ss.payment_progress > 0 -%}
+                        <span class="badge bg-info">{{ _("jarayonda") }}</span>
+                    {%- else -%}
+                        <span class="badge bg-danger">{{ _("to'lanmagan") }}</span>
+                    {%- endif %}</td>
+                    <td>{% if ss %}{{ ss.payment_method|payment_method_display }}{% else %}-{% endif %}</td>
+                    <td class="text-nowrap text-end">
+                        {% if perms.rent.add_thingstatus and bazaar.is_allow_cash and (not ss or not ss.is_paid and ss.payment_progress == 0) %}
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                    data-title="{{ _("{0} № {1}").format(thing.name, number) }}"
+                                    data-btn_title="{{ _("{0} so'm to'landi").format(object.price|intcomma) }}"
+                                    data-number="{{ number }}"
+                                    class="btn btn-success btn-sm py-1">
+                                <i class="bi bi-cash"></i> {{ _("Naqd") }}
+                            </button>
+                        {% endif %}
+                        <a href="{{ url("rent:qr-code", bazaar.id, thing.id, number) }}" target="_blank"
+                           class="btn btn-info py-1 btn-sm"><i class="bi bi-qr-code"></i></a>
+
+                        {% if perms.rent.view_thingstatus %}
+                            <button type="button" data-url="?number={{ number }}" data-bs-toggle="modal"
+                                    data-bs-target="#id-ajax-modal" class="btn btn-dark py-1 btn-sm">
+                                <i class="bi bi-list"></i>
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% include "rent/_cash_modal.j2" %}
+    {% include "include/ajax-modal.j2" %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+{% endblock %}

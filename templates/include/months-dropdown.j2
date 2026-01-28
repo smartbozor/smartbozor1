@@ -1,0 +1,33 @@
+{% set months_dropdown %}
+<button type="button" data-bs-toggle="dropdown" class="btn btn-success py-1 dropdown-toggle">
+    {{ current_month.name }}
+</button>
+<div class="dropdown-menu dropdown-menu-end">
+    {% for mm in months %}
+        <a href="?n={{ mm.n }}" class="dropdown-item {% if mm.n == n %}active text-white{% endif %}">
+            {{ mm.name }}
+        </a>
+    {% endfor %}
+</div>
+{% endset %}
+
+{% if calendar %}
+    <div class="btn-group ms-auto">
+        <div class="btn-group">
+            {{ months_dropdown }}
+        </div>
+
+        <div class="btn-group">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-success py-1 rounded-end">
+                <i class="bi bi-calendar3"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3">
+                {{ calendar|safe }}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="dropdown ms-auto">
+        {{ months_dropdown }}
+    </div>
+{% endif %}

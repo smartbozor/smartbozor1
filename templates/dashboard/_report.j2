@@ -1,0 +1,45 @@
+<script>window.init_chart = []</script>
+
+{% set current_month = months | selectattr("n", "equalto", n) | first %}
+{% set months_dropdown %}
+    {% include 'include/months-dropdown.j2' %}
+{% endset %}
+
+{% for section_title, section_icon, cards in sections %}
+    <div class="bg-primary text-white rounded-3 d-flex align-items-center mt-4 p-3">
+        <div class="fs-5 fw-bold text-uppercase">
+            <i class="bi {{ section_icon }}"></i>
+            {{ section_title }}
+        </div>
+        {{ months_dropdown }}
+    </div>
+    <div class="mt-4">
+        <div class="row g-4">
+            {% for row in cards %}
+                {% if row[1] is mapping %}
+                    {% set key="id_chart_" ~ loop.index0 %}
+                    <div class="col-12">
+                        <div class="bg-white shadow rounded-3 p-4">
+                            <div><strong class="text-uppercase">{{ row[0] }}</strong></div>
+                            <div>
+                                <canvas id="{{ key }}" style="height: 400px"></canvas>
+                            </div>
+                            <script>window.init_chart.push(["{{ key }}", {{ row[1]|tojson }}])</script>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-lg-3">
+                        <div class="bg-white shadow rounded-3 p-4">
+                            <strong class="text-uppercase">{{ row[0] }}</strong>
+                            <div>{{ row[1] }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ static("js/chart-init.min.js") }}"></script>

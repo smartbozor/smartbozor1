@@ -1,0 +1,72 @@
+{% macro accordion(id, title, content) %}
+    <div class="accordion accordion-flush">
+        <div class="accordion-item border-bottom">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#{{ id }}">
+                    {{ title }}
+                </button>
+            </h2>
+            <div id="{{ id }}" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <table class="table table-striped table-bordered table-hover m-0">
+                        <tbody>
+                        {{ content }}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro simple_list(list) %}
+    {% for n, p in list %}
+        <tr>
+            <td>{{ n }}</td>
+            <td>{% if p is number %}{{ p|som }}{% else %}{{ p }}{% endif %}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro update_list(list) %}
+    {% for stall, p in list %}
+        <tr>
+            <td>{{ stall.number }}</td>
+            <td>{% if p != stall.price %}{{ stall.price|som }} &raquo; {% endif %}{{ p|som }}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro delete_list(list) %}
+    {% for stall in list %}
+        <tr>
+            <td>{{ stall.number }}</td>
+            <td>{{ stall.price|som }}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% if stall_wrong %}
+    {{ accordion("id-import-wrong", _("Noto'g'ri kiritilgam rastalar - {0} ta").format(stall_wrong|length), simple_list(stall_wrong)) }}
+{% endif %}
+
+{% if duplicates %}
+    {{ accordion("id-import-duplicates", _("Dublika rasta raqamlari - {0} ta").format(duplicates|length), simple_list(duplicates)) }}
+{% endif %}
+
+{% if stall_insert %}
+    {{ accordion("id-import-insert", _("Yangi qo'shiladigan rastalar - {0} ta").format(stall_insert|length), simple_list(stall_insert)) }}
+{% endif %}
+
+{% if stall_update %}
+    {{ accordion("id-import-update", _("Tahrirlanadigan rastalar - {0} ta").format(stall_update|length), update_list(stall_update)) }}
+{% endif %}
+
+{% if stall_delete %}
+    {{ accordion("id-import-delete", _("Excelda topilmagan rastalar - {0} ta").format(stall_delete|length), delete_list(stall_delete)) }}
+{% endif %}
+
+{% if stall_skip %}
+    {{ accordion("id-import-skip", _("O'zgarishsiz qolgan rastalar - {0} ta").format(stall_skip|length), delete_list(stall_skip)) }}
+{% endif %}

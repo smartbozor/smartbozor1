@@ -1,0 +1,12 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <h1>{{ object }} [{{ object.server_ip }}:{{ object.server_port }}]</h1>
+        {% if result %}
+            <div class="alert alert-success" role="alert">{{ result }}</div>
+        {% else %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+    </div>
+{% endblock %}

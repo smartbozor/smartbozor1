@@ -1,0 +1,28 @@
+<div class="modal fade" id="id-cash-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <h5 class="modal-header">
+                {{ _("Naqd to'lov") }}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </h5>
+            <div class="modal-body">
+                <form method="post" action="" id="id-cash-form" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <div class="title fs-5"></div>
+                        <input type="hidden" name="shop" class="shop" value="0">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control amount" name="amount"
+                               placeholder="{{ _("Qancha to'ladi?") }}"/>
+                        <div class="input-group-text">{{ _("so'm") }}</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary d-flex align-items-center">
+                        <span class="spinner-border spinner-border-sm me-2 d-none"></span>
+                        {{ _("Saqlash") }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

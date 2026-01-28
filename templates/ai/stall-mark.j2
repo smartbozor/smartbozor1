@@ -1,0 +1,114 @@
+{% extends 'layouts/auth.j2' %}
+
+{% macro group_link(group, g, title, total) %}
+    <a href="?group={{ g }}"
+       class="btn {% if group == g %}btn-primary text-white{% else %}btn-outline-primary{% endif %} py-1">
+        {{ title }} {% if total > 0 %}[{{ total }}]{% endif %}
+    </a>
+{% endmacro %}
+
+{% block page_content %}
+    <div class="btn-group btn-group-sm mb-3">
+        {{ group_link(group, 0, _("Barchasini"), group_total.values()|sum) }}
+        {% for g in range(1, 11) %}
+            {{ group_link(group, g, "Group {}".format(g), group_total.get(g, 0)) }}
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        <label class="d-block">
+            Camera {{ found.camera_id }}
+            <select class="form-control" id="id_camera_list">
+                <option value="0">-</option>
+                {% for cam in cameras %}
+                    <option value="{{ cam.id }}" {% if cam.id == camera_id %}selected="selected"{% endif %}>
+                        Camera {{ cam.id }} - {{ camera_total.get(cam.id, 0) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+
+    {% if found %}
+        <div class="d-inline-block">
+            <div class="border d-inline-block">
+                <div class="position-relative">
+                    <div class="position-absolute start-0 top-0 bottom-0 end-0 contain-image"
+                         style="background-image: url('{{ found.image.url }}')"></div>
+                    <canvas id="id-ai-stall-mark" class="w-100"></canvas>
+                </div>
+            </div>
+
+            {% if found.status == found.STATUS_NEW %}
+                <div class="text-center pt-3">
+                    <a href="?wrong={{ found.id }}&group={{ group }}&camera={{ camera_id }}"
+                       class="btn btn-danger key-left">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        {{ _("Rasm xato olingan") }} (A)
+                    </a>
+
+                    <button type="button" class="btn btn-primary key-right ms-3" id="id_next_btn"
+                            data-id="{{ found.id }}">
+                        {{ _("Saqlash & Keyingisi") }} (D)
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            {% elif found.status == found.STATUS_MARKED %}
+                <div class="text-center pt-3">
+                    <button type="button" class="btn btn-danger key-left" id="id_no"
+                            data-id="{{ found.id }}">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        {{ _("Xato belgilangan") }} (A)
+                    </button>
+                    <button type="button" class="btn btn-success key-right ms-3" id="id_yes"
+                            data-id="{{ found.id }}">
+                        {{ _("Hammasi joyida") }} (D)
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            {% else %}
+                <div class="text-center pt-3">
+                {% with href="?group={}&camera={}&next={}".format(group, camera_id, found.id) %}
+                    <a href="{{ href }}&wrong={{ found.id }}"
+                       class="btn btn-danger">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        {{ _("Rasm xato olingan") }}
+                    </a>
+
+                    <a href="{{ href }}" class="btn btn-warning key-left ms-3">
+                        {{ _("Keyingisi") }} (A)
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    <button type="button" class="btn btn-success key-right ms-3" data-href="{{ href }}" id="id_next_btn"
+                            data-id="{{ found.id }}">
+                        {{ _("Saqlash & Keyingisi") }} (D)
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                {% endwith %}
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">{{ _("Belgilanmagan rasmlar qolmadi. Ertaga qayta urinib ko'ring.") }}</div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if found %}
+        {% if found.status in [found.STATUS_MARKED, found.STATUS_MARKED_MODERATED, found.STATUS_GENERATED] %}
+            <script type="application/json" id="id_marked">{{ found.data|tojson }}</script>
+        {% endif %}
+        <script type="application/json" id="id_saved">{{ found.camera.roi|tojson }}</script>
+        <script src="https://cdn.jsdelivr.net/npm/fabric@6.9.1/dist/index.min.js"></script>
+        <script src="{{ static("js/ai-stall-mark.min.js") }}?{{ STATIC_VERSION }}" data-edit="{{ found.status != found.STATUS_MARKED }}"></script>
+    {% endif %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const camEl = document.querySelector("#id_camera_list")
+            camEl.addEventListener("change", function (e) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("camera", e.currentTarget.value);
+                window.location.href = url.toString();
+            })
+        })
+    </script>
+{% endblock %}

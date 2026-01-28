@@ -1,0 +1,148 @@
+{% extends 'layouts/auth.j2' %}
+
+{% set current_month = months | selectattr("n", "equalto", n) | first %}
+{% set months_dropdown %}
+{% include 'include/months-dropdown.j2' %}
+{% endset %}
+
+{% block page_content %}
+    <div class="d-flex mb-3 align-items-center">
+        <strong>{{ range_title }}</strong>
+        <div class="ms-auto">{{ months_dropdown }}</div>
+        <a href="?{{ request.GET.urlencode() }}&export=1" class="btn btn-info btn-sm py-1 ms-2">
+            <i class="bi bi-download"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive" style="max-width: 100%;">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="text-center align-middle">
+            <tr class="table-dark">
+                <th>{{ _("Bozor nomi") }}</th>
+                <th>{{ _("Ish kuni") }}</th>
+                <th>{{ _("Rastalar") }}</th>
+                <th>{{ _("Do'konlar") }}</th>
+                {% for thing in things %}
+                    <th>{{ thing.name }}</th>
+                {% endfor %}
+                <th>{{ _("Avtoturargoh") }}</th>
+                <th>{{ _("JAMI") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set total = namespace(occupied=0, paid=0) %}
+
+            {% for bazaar in bazaars %}
+                {% set stall_count = stall_count.get(bazaar.id, {}) %}
+                {% set stall_occupied_count = stall_occupied_total.get(bazaar.id, {}).get("count", 0) %}
+                {% set stall_occupied = stall_occupied_total.get(bazaar.id, {}).get("total", 0) %}
+                {% set stall_cash = stall_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_CASH]|default(0) %}
+                {% set stall_click = stall_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_CLICK]|default(0) %}
+                {% set stall_payme = stall_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_PAYME]|default(0) %}
+                {% set stall_paid = stall_cash + stall_click + stall_payme %}
+
+                {% set shop_occupied = shop_occupied_total[bazaar.id]|default(0) %}
+                {% set shop_cash = shop_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_CASH]|default(0) %}
+                {% set shop_click = shop_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_CLICK]|default(0) %}
+                {% set shop_payme = shop_paid_total[bazaar.id ~ "-" ~ bazaar.PAYMENT_METHOD_PAYME]|default(0) %}
+                {% set shop_paid = shop_cash + shop_click + shop_payme %}
+
+                {% set total_occupied = namespace(n=stall_occupied + shop_occupied) %}
+                {% set total_paid = namespace(n=stall_paid + shop_paid) %}
+                <tr class="align-middle">
+                    <td>{{ bazaar.name }}</td>
+                    <td class="text-center text-nowrap">{{ _("{0} kun").format(working_days.get(bazaar.id, 0)) }}</td>
+                    <td class="text-center text-nowrap {% if stall_paid < stall_occupied %}table-danger{% else %}table-success{% endif %}"
+                        data-bs-toggle="popover" data-bs-html="true" data-bs-content="{{ _("Mavjud: {0}<br/>Band: {1} / {2}<hr class='my-1'/>Naqd: {3}<br/>Click: {4}<br/>Payme: {5}").format(
+                        stall_count.get("count", 0),
+                        stall_occupied_count,
+                        stall_count.get("total", 0),
+                        stall_cash|som,
+                        stall_click|som,
+                        stall_payme|som
+                    ) }}" data-bs-placement="top" data-bs-trigger="hover">
+                        <strong>{{ stall_paid|som }}</strong><br/>
+                        <small>{{ stall_occupied|som }}</small>
+                    </td>
+
+                    <td class="text-center text-nowrap {% if shop_paid < shop_occupied %}table-danger{% else %}table-success{% endif %}"
+                        data-bs-toggle="popover" data-bs-html="true" data-bs-content="{{ _("Mavjud: {0}<hr class='my-1' />Naqd: {1}<br/>Click: {2}<br/>Payme: {3}").format(
+                        shop_count.get(bazaar.id, 0),
+                        shop_cash|som,
+                        shop_click|som,
+                        shop_payme|som
+                    ) }}" data-bs-placement="top" data-bs-trigger="hover">
+                        <strong>{{ shop_paid|som }}</strong><br/>
+                        <small>{{ shop_occupied|som }}</small>
+                    </td>
+                    {% for thing in things %}
+                        {% set rent_c = rent_count.get("{0}-{1}".format(bazaar.id, thing.id), {}) %}
+                        {% set rent_occupied_count = rent_occupied_total.get("{0}-{1}".format(bazaar.id, thing.id), {}).get("count", 0) %}
+                        {% set rent_occupied_total = rent_occupied_total.get("{0}-{1}".format(bazaar.id, thing.id), {}).get("total", 0) %}
+                        {% set rent_paid_cash = rent_paid_total["{0}-{1}-{2}".format(bazaar.id, thing.id, bazaar.PAYMENT_METHOD_CASH)]|default(0) %}
+                        {% set rent_paid_click = rent_paid_total["{0}-{1}-{2}".format(bazaar.id, thing.id, bazaar.PAYMENT_METHOD_CLICK)]|default(0) %}
+                        {% set rent_paid_payme = rent_paid_total["{0}-{1}-{2}".format(bazaar.id, thing.id, bazaar.PAYMENT_METHOD_PAYME)]|default(0) %}
+                        {% set rent_paid = rent_paid_cash + rent_paid_click + rent_paid_payme %}
+
+                        {% set total_occupied.n = total_occupied.n + rent_occupied_total %}
+                        {% set total_paid.n = total_paid.n + rent_paid %}
+                        <td class="text-center text-nowrap {% if rent_paid < rent_occupied_total %}table-danger{% else %}table-success{% endif %}"
+                            data-bs-toggle="popover" data-bs-html="true" data-bs-content="{{ _("Mavjud: {0}<br/>Band: {1} / {2}<br/>Narx: {3}<hr class='my-1'>Naqd: {4}<br/>Click: {5}<br/>Payme: {6}").format(
+                            rent_c.get("count", 0),
+                            rent_occupied_count,
+                            rent_c.get("total", 0),
+                            rent_c.get("price", 0)|som,
+                            rent_paid_cash|som,
+                            rent_paid_click|som,
+                            rent_paid_payme|som
+                        ) }}" data-bs-placement="top" data-bs-trigger="hover">
+                            <strong>{{ rent_paid|som }}</strong><br/>
+                            <small>{{ rent_occupied_total|som }}</small>
+                        </td>
+                    {% endfor %}
+                    {% set parking_free_count = parking.get(bazaar.id).free_count|default(0) %}
+                    {% set parking_paid_count = parking.get(bazaar.id).paid_count|default(0) %}
+                    {% set parking_unknown_count = parking.get(bazaar.id).unknown_count|default(0) %}
+
+                    {% set parking_total = parking.get(bazaar.id).total|default(0) %}
+                    {% set parking_total_paid = parking.get(bazaar.id).total_paid|default(0) %}
+
+                    {% set parking_total_paid_cash = parking.get(bazaar.id).total_paid_cash|default(0) %}
+                    {% set parking_total_paid_click = parking.get(bazaar.id).total_paid_click|default(0) %}
+                    {% set parking_total_paid_payme = parking.get(bazaar.id).total_paid_payme|default(0) %}
+
+                    {% set total_occupied.n = total_occupied.n + parking_total %}
+                    {% set total_paid.n = total_paid.n + parking_total_paid %}
+                    <td class="text-center text-nowrap {% if parking_total_paid < parking_total %}table-danger{% else %}table-success{% endif %}"
+                        data-bs-toggle="popover" data-bs-html="true" data-bs-content="{{ _("Tekin: {0} ta<br/>Pullik: {1} ta<br/>Raqamsiz: {5}<hr class='my-1'/>Naqd: {2}<br/>Click: {3}<br/>Payme: {4}").format(
+                            parking_free_count|intcomma,
+                            parking_paid_count|intcomma,
+                            parking_total_paid_cash|som,
+                            parking_total_paid_click|som,
+                            parking_total_paid_payme|som,
+                            parking_unknown_count|intcomma
+                        ) }}" data-bs-placement="top" data-bs-trigger="hover">
+                        <strong>{{ parking_total_paid|som }}</strong><br/>
+                        <small>{{ parking_total|som }}</small>
+                    </td>
+                    <td class="text-center text-nowrap {% if total_paid.n < total_occupied.n %}table-danger{% else %}table-success{% endif %}">
+                        <strong>{{ total_paid.n|som }}</strong><br/>
+                        <small>{{ total_occupied.n|som }}</small>
+                    </td>
+                </tr>
+
+                {% set total.occupied = total.occupied + total_occupied.n %}
+                {% set total.paid = total.paid + total_paid.n %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-end">
+            <h5>{{ _("Jami tushum: {0}").format(total.occupied|som) }}</h5>
+            {% set percent = 0 %}
+            {% if total.occupied > 0 %}{% set percent = total.paid * 100 / total.occupied %}{% endif %}
+            <h5>{{ _("Jami to'langan: {0}").format(total.paid|som) }}</h5>
+            <h5>{{ _("To'langan: {0}%%").format(percent|round(2)) }}</h5>
+        </div>
+    </div>
+{% endblock %}

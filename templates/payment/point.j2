@@ -1,0 +1,35 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="container pt-4 px-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="shadow bg-white rounded-3 p-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-uppercase">
+                            {{ object.point.district.region }} &raquo;
+                            {{ object.point.district }}
+                            {% if object.point.name %}
+                                &raquo; {{ object.point.name }}
+                            {% endif %}
+                        </h4>
+                        <hr/>
+                        {{ bootstrap_messages() }}
+
+                        {% if object.name %}
+                            <div class="text-uppercase">
+                                {{ object.name }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if is_available %}
+                        {% include 'payment/includes/point_form.j2' %}
+                    {% else %}
+                        <div class="alert alert-danger">{{ _("Tizim vaqtincha o'chirilgan") }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

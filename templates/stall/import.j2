@@ -1,0 +1,28 @@
+{% extends 'layouts/auth.j2' %}
+
+
+{% block page_content %}
+    {% if step == 1 %}
+        <div class="border mb-3 border-bottom-0">
+            {% include 'stall/_import_step1.j2' %}
+        </div>
+
+        {% if can_save %}
+            <form method="post" action="" class="d-flex align-items-center">
+                {% csrf_token %}
+
+                <input type="hidden" value="{{ step + 1 }}" name="step">
+                <input type="hidden" name="data" value="{{ import_data }}">
+                <button type="submit" class="btn btn-primary">{{ _("Saqlash") }}</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="file" name="file" class="form-control">
+                <button type="submit" class="btn btn-primary">{{ _("Yuklash") }}</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

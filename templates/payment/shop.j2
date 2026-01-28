@@ -1,0 +1,138 @@
+{% extends 'layouts/base.j2' %}
+
+{% block extra_style %}
+    <style>
+        .payme-button input {
+            height: 48px !important;
+        }
+    </style>
+{% endblock %}
+
+{% set cash_allowed = user.is_authenticated and bazaar.is_allow_cash and perms.shop.view_shop and perms.shop.add_shoppayment and bazaar.id in ALLOWED_BAZAAR_ID %}
+
+{% block content %}
+    {% set balance = total_payment - total_rent %}
+
+    <div class="container pt-4 px-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="shadow bg-white rounded-3 p-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-uppercase">{{ bazaar }}</h4>
+                        <hr/>
+                        {{ bootstrap_messages() }}
+
+                        <div>
+                            {{ shop.section.area|upper }} &raquo;
+                            {{ shop.section|upper }} &raquo;
+                            {{ _("DO'KON") }}
+                        </div>
+                        <h1>{{ shop.number }}</h1>
+                    </div>
+
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th class="bg-primary text-white w-50">{{ _("Tadbirkor") }}</th>
+                            <td>{{ shop.owner|default("-", true) }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-primary text-white">{{ _("Oylik ijara") }}</th>
+                            <td>{{ shop.rent_price|som }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-primary text-white">{{ _("Qarzdorlik") }}</th>
+                            <td>
+                                <div class="badge {% if balance < 0 %}bg-danger{% elif balance > 0 %}bg-success{% else %}bg-dark{% endif %}">
+                                    {{ balance|som }}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bg-primary text-white">{{ _("Ushbu oydagi to'lovi") }}</th>
+                            <td>{{ current_month_total_payment|som }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    {% if payment_amount > 0 %}
+                        <div class="d-flex justify-content-center mb-5 align-items-center">
+                            <div class="bg-success py-1 px-3 rounded-3 fs-5 fw-bold">+{{ payment_amount|som }}</div>
+                            <a href="?" class="ms-3 text-decoration-none d-blok py-2">{{ _("Boshqa summa kiritish") }}</a>
+                        </div>
+                    {% endif %}
+
+                    {% if payment_amount == 0 %}
+                        {% set is_invalid = "amount" in request.GET %}
+                        <form method="get" action="" autocomplete="off">
+                            <div class="mb-3">
+                                <input name="amount" type="number" inputmode="numeric"
+                                       class="form-control {% if is_invalid %}is-invalid{% endif %}"
+                                       placeholder="{{ _("To'lov summasini kiriting") }}"/>
+                                {% if is_invalid %}
+                                    <div class="invalid-feedback">{{ _("Iltimos, qiymatni to'g'ri kiriting") }}</div>
+                                {% else %}
+                                    <div class="form-text">{{ _("Kamida 1000 so'm kiritilishi lozim.") }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success">{{ _("To'lov turini tanlash") }}</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
+                            {% if cash_allowed %}
+                                <button class="btn btn-cash fs-5 confirm px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                        data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                        data-title="{{ _("Do'kon № {0}").format(shop.number) }}"
+                                        data-shop="{{ shop.id }}"
+                                        data-amount_readonly="{{ payment_amount|safe }}"
+                                        data-pk="{{ shop.id }}"
+                                        data-url="{{ url("shop:list", bazaar.id) }}">
+                                    <i class="bi bi-cash me-2"></i>
+                                    {{ _("Naqd") }}
+                                </button>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_click %}
+                                <a class="btn click-btn px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                   href="https://my.click.uz/services/pay?service_id={{ bazaar.click_service_id }}&merchant_id={{ bazaar.click_merchant_id }}&amount={{ payment_amount }}&transaction_param=m-{{ shop.id }}-{{ timestamp_ms }}&return_url={{ request.build_absolute_uri() }}">
+                                    <img src="{{ static("img/click.svg") }}" style="height: 16px" alt="Click"/>
+                                </a>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_payme %}
+                                <form id="form-payme" method="POST" action="https://checkout.paycom.uz/"
+                                      style="height: 48px;">
+                                    <input type="hidden" name="merchant" value="{{ bazaar.payme_merchant }}">
+                                    <input type="hidden" name="account[order_id]" value="m-{{ shop.id }}-{{ timestamp_ms }}">
+                                    <input type="hidden" name="amount" value="{{ payment_amount * 100 }}">
+                                    <input type="hidden" name="lang" value="uz">
+                                    <input type="hidden" name="button" data-type="png" value="colored">
+                                    <div class="payme-button"></div>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if cash_allowed %}
+        {% include "shop/_cash_modal.j2" %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if bazaar.is_allow_payme %}
+        <script src="https://cdn.paycom.uz/integration/js/checkout.min.js"></script>
+        <script>document.addEventListener("DOMContentLoaded", () => {
+            Paycom.Button('#form-payme', '.payme-button')
+        })</script>
+    {% endif %}
+
+    {% if cash_allowed %}
+        <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+    {% endif %}
+{% endblock %}

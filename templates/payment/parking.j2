@@ -1,0 +1,157 @@
+{% extends 'layouts/base.j2' %}
+
+{% block extra_style %}
+    <style>
+        .payme-button input {
+            height: 48px !important;
+        }
+    </style>
+{% endblock %}
+
+{% set cash_allowed = user.is_authenticated and bazaar.is_allow_cash and perms.parking.view_parking and perms.parking.add_parkingstatus and bazaar.id in ALLOWED_BAZAAR_ID %}
+
+{% block content %}
+    <div class="container pt-4 px-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="shadow bg-white rounded-3 p-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-uppercase">{{ bazaar }}</h4>
+                        <hr/>
+                        {{ bootstrap_messages() }}
+
+                        <div class="text-uppercase">
+                            {{ parking.name }}
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th class="bg-primary text-white w-50">{{ _("To'lov qilinmaganlar soni") }}</th>
+                            <td>{{ _("{0} ta").format(not_paid.count|intcomma) }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-primary text-white w-50">{{ _("To'lov qilinmagan") }}</th>
+                            <td>{{ not_paid.total_amount|som }}</td>
+                        </tr>
+
+                        {% if parking_prices|length > 0 %}
+                            <tr>
+                                <th colspan="2" class="bg-dark text-white text-center">{{ _("Narxlar") }}</th>
+                            </tr>
+                        {% endif %}
+                        {% for pp in parking_prices %}
+                            {% set next_pp = parking_prices[loop.index] if loop.index < parking_prices|length else None %}
+                            <tr>
+                                <th class="bg-primary text-white">
+                                    {%- if parking_prices|length == 1 -%}
+                                        {{ _("Kirish narxi") }}
+                                    {%- elif next_pp -%}
+                                        {{ _("{0} minutgacha").format(next_pp.duration // 60) }}
+                                    {%- else -%}
+                                        {{ _("{0} minutdan oshsa").format(pp.duration // 60) }}
+                                    {%- endif -%}
+                                </th>
+                                <td>
+                                    {%- if pp.price == 0 -%}{{ _("Tekin") }}
+                                        {%- else -%}{{ pp.price|som }}
+                                    {%- endif -%}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% if payment_amount > 0 %}
+                        {% if (order_nonce|string).startswith("9") %}
+                            <div class="alert alert-info">{{ _("Avtomobil raqami: {}. To'lanmanga {} ta").format(query, found_rows) }}</div>
+                        {% else %}
+                            <div class="alert alert-info">{{ _("Tanlangan {} ta").format(found_rows) }}</div>
+                        {% endif %}
+                        <div class="d-flex justify-content-center mb-5 align-items-center">
+                            <div class="bg-success py-1 px-3 rounded-3 fs-5 fw-bold">+{{ payment_amount|som }}</div>
+                            <a href="?"
+                               class="ms-3 text-decoration-none d-blok py-2">{{ _("Boshqa qiymat kiritish") }}</a>
+                        </div>
+                    {% endif %}
+
+                    {% if payment_amount == 0 and not_paid.total_amount > 0 %}
+                        {% set is_invalid = "query" in request.GET %}
+                        <form method="get" action="" autocomplete="off">
+                            <div class="mb-3">
+                                <input name="query" type="text"
+                                       class="form-control {% if is_invalid %}is-invalid{% endif %}"
+                                       placeholder="{{ _("Avtomobillar sonini yoki raqamini kiriting") }}"/>
+                                {% if is_invalid %}
+                                    {% if request.GET.query.isdigit() %}
+                                        <div class="invalid-feedback">{{ _("Iltimos, qiymatni to'g'ri kiriting") }}</div>
+                                    {% else %}
+                                        <div class="invalid-feedback">{{ _("Iltimos, avtomobil raqamini to'g'ri kiriting") }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="form-text">{{ _("Avtomobillar soni {0} gacha kiritilishi lozim.").format(not_paid.count|intcomma) }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success">{{ _("To'lov turini tanlash") }}</button>
+                            </div>
+                        </form>
+                    {% elif order_nonce > 0 %}
+                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
+                            {% if cash_allowed %}
+                                <button class="btn btn-cash fs-5 confirm px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                        data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                        data-title="{{ _("Avtoturargoh {0}").format('"' + parking.name + '"') }}"
+                                        data-parking="{{ parking.id }}"
+                                        data-pk="{{ parking.id }}"
+                                        data-amount="{{ order_nonce|safe }}"
+                                        data-order_id="{{ order_id|safe }}"
+                                        data-payment_amount_readonly="{{ payment_amount|safe }}"
+                                        data-url="{{ url("parking:list", bazaar.id) }}">
+                                    <i class="bi bi-cash me-2"></i>
+                                    {{ _("Naqd") }}
+                                </button>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_click %}
+                                <a class="btn click-btn px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                   href="https://my.click.uz/services/pay?service_id={{ bazaar.click_service_id }}&merchant_id={{ bazaar.click_merchant_id }}&amount={{ payment_amount }}&transaction_param=p-{{ order_id }}-{{ order_nonce }}&return_url={{ request.build_absolute_uri() }}">
+                                    <img src="{{ static("img/click.svg") }}" style="height: 16px" alt="Click"/>
+                                </a>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_payme %}
+                                <form id="form-payme" method="POST" action="https://checkout.paycom.uz/"
+                                      style="height: 48px;">
+                                    <input type="hidden" name="merchant" value="{{ bazaar.payme_merchant }}">
+                                    <input type="hidden" name="account[order_id]"
+                                           value="p-{{ order_id }}-{{ order_nonce }}">
+                                    <input type="hidden" name="amount" value="{{ payment_amount * 100 }}">
+                                    <input type="hidden" name="lang" value="uz">
+                                    <input type="hidden" name="button" data-type="png" value="colored">
+                                    <div class="payme-button"></div>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "parking/_cash_modal.j2" %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if bazaar.is_allow_payme %}
+        <script src="https://cdn.paycom.uz/integration/js/checkout.min.js"></script>
+        <script>document.addEventListener("DOMContentLoaded", () => {
+            Paycom.Button('#form-payme', '.payme-button')
+        })</script>
+    {% endif %}
+
+    {% if cash_allowed %}
+        <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+    {% endif %}
+{% endblock %}

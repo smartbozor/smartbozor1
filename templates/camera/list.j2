@@ -1,0 +1,89 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <div class="mb-3 text-end">
+        {% if updating %}
+            <span>{{ _("Rasmlar yangilanmoqda...") }}</span>
+        {% elif perms.camera.change_camera %}
+            <button type="button" class="btn btn-primary text-white px-3 py-2"
+                    id="id_update_all">{{ _("Barchasini yangilash") }}</button>
+            <a href="?o=true" class="btn btn-success text-white px-3 py-2 ms-2">{{ _("Yo'qlarini yangilash") }}</a>
+        {% endif %}
+    </div>
+
+    <div class="row g-3 camera-list">
+        {% for cam in object_list %}
+            <div class="col-6 col-lg-4">
+                <div class="position-relative border">
+                    <a href="{{ url("camera:preview", cam.id) }}" class="text-decoration-none text-center d-block">
+                        <img src="{% if cam.screenshot %}{{ cam.screenshot.url }}?{{ request.GET.t }}{% else %}{{ static("img/no-photo.png") }}{% endif %}"
+                             class="img-fluid" alt="{{ cam.name }}">
+                    </a>
+                    {% if cam.use_ai %}
+                        <div class="position-absolute end-0 top-0 p-1">
+                            <div class="bg-success px-1 rounded">
+                                <i class="bi bi-cpu"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="mt-2 d-flex align-items-center">
+                    {% if cam.is_online %}🟢{% else %}🔴{% endif %} <strong class="ms-2">{{ cam.name }}</strong>
+                    {% if cam.total_info %}
+                        <span class="ms-2">({{ cam.total_info }})</span>
+                    {% endif %}
+                    {% if perms.camera.change_camera %}
+                        <a href="{{ url("camera:roi", cam.id) }}" class="btn ms-auto py-1 btn-info">
+                            <i class="bi bi-bounding-box"></i>
+                        </a>
+                        <a href="{{ url("camera:preview-ai", cam.id) }}" class="btn ms-2 py-1 btn-info">
+                            <i class="bi bi-cpu"></i>
+                        </a>
+                        {% if cam.screenshot %}
+                            <a href="?r={{ cam.id }}" class="btn ms-2 py-1 btn-danger">
+                                <i class="bi bi-image"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                {{ _("Birota ham kamera kiritilmagan.") }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-3">
+        {{ bootstrap_pagination(page_obj, extra=request.GET.urlencode()) }}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.querySelector("#id_update_all").addEventListener("click", function (e) {
+            if (confirm("Are you sure?")) {
+                window.location.href = "?u=true"
+            }
+        })
+    </script>
+    {% if updating %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const check = function () {
+                    fetch("?check=true").then(r => r.text()).then(r => {
+                        if (r.toLowerCase() === "false") {
+                            window.location.href = '?t=' + Date.now();
+                        } else {
+                            setTimeout(check, 2000)
+                        }
+                    }).catch(e => {
+                        alert(e)
+                    })
+                }
+
+                setTimeout(check, 2000)
+            })
+        </script>
+    {% endif %}
+{% endblock %}

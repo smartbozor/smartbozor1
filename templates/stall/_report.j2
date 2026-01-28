@@ -1,0 +1,44 @@
+<div class="d-flex mb-4 gap-4 flex-wrap">
+    <div class="flex-grow-1">
+        <div class="bg-white shadow rounded p-4">
+            <h6>{{ total_title|default(_("Jami rastalar")) }}</h6>
+            {% if total.total_count %}
+                <div>{{ _("{0} ta / jami {1} ta").format(total.count, total.total_count) }}</div>
+            {% else %}
+                <div>{{ _("{0} ta").format(total.count) }}</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="flex-grow-1">
+        <div class="bg-white shadow rounded p-4">
+            <h6>{{ _("Band") }}</h6>
+            <div>
+                <span> {{ _("{0} ta").format(total.occupied_count) }}</span>
+                <span class="text-danger">({{ _("qoldi {0} ta").format(total.count - total.occupied_count) }})</span>
+            </div>
+        </div>
+    </div>
+    <div class="flex-grow-1">
+        <div class="bg-white shadow rounded p-4">
+            <h6>{{ _("To'langan") }}</h6>
+            <div>
+                <span>{{ _("{0} ta").format(total.paid.count) }}</span>
+                <span class="text-danger">({{ _("qoldi {0} ta").format(total.count - total.paid.count) }})</span>
+            </div>
+        </div>
+    </div>
+    <div class="flex-grow-1">
+        <div class="bg-white shadow rounded p-4">
+            <h6>{{ _("Jami summa") }}</h6>
+            <div>{{ total.paid.total|som }}</div>
+        </div>
+    </div>
+    {% for amount in total.amount %}
+        <div class="flex-grow-1">
+            <div class="bg-white shadow rounded p-4">
+                <h6>{{ amount.payment_method_today|default(amount.payment_method)|payment_method_display }}</h6>
+                <div>{{ amount.total|som }}</div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

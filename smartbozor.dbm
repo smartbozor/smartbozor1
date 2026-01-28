@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.1.6" use-changelog="false" max-obj-count="36"
+	 last-position="521,867" last-zoom="1" scene-rect="-740,0,2849.52,2062.52"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="smartbozor" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
+</schema>
+
+<table name="bazaar" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-40" y="740"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="district_id">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name_uz" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="working_days" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+		<comment> <![CDATA[1 - dush
+2 - sesh
+4 - chor
+8 - pay
+16 - jum
+32 - shan
+64 - yak]]> </comment>
+	</column>
+	<column name="payment_methods" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+		<comment> <![CDATA[1 - naqd
+2 - click
+4 - payme]]> </comment>
+	</column>
+	<column name="payme_merchant" default-value="NULL">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="payme_username" default-value="NULL">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="payme_password" default-value="NULL">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="bazaar_pk" type="pk-constr" table="public.bazaar">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="area" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="180" y="340"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="bazaar_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name_uz" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="area_pk" type="pk-constr" table="public.area">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="section" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="540" y="480"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="area_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name_uz" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="section_pk" type="pk-constr" table="public.section">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="stall" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="720" y="280"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="section_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="stall_pk" type="pk-constr" table="public.stall">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="shop" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="780" y="660"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="section_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="rent_price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="is_active" not-null="true" default-value="TRUE">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="shop_pk" type="pk-constr" table="public.shop">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="district" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-640" y="280"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="region_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name_uz" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="district_pk" type="pk-constr" table="public.district">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="stall_status" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1180" y="220"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="stall_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="is_occupied" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="is_paid" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="payment_method" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="price" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="occupied_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="paid_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="payme_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="click_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<constraint name="stall_status_pk" type="pk-constr" table="public.stall_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="date"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="stall_status_default" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1560" y="260"/>
+</table>
+
+<relationship name="new_table_is_partition_of_stall_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#c8a13b"
+	 src-table="public.stall_status_default"
+	 dst-table="public.stall_status"/>
+
+<table name="shop_payment" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1280" y="540"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="shop_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="nonce" not-null="true" default-value="0">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="payment_method" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="amount" not-null="true" default-value="0">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="paid_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="shop_payment_pk" type="pk-constr" table="public.shop_payment">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="date"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="shop_payment_default" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1720" y="500"/>
+</table>
+
+<relationship name="new_table_is_partition_of_shop_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#84621a"
+	 src-table="public.shop_payment_default"
+	 dst-table="public.shop_payment"/>
+
+<table name="parking" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="320" y="1060"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="bazaar_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="parking_pk" type="pk-constr" table="public.parking">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="parking_price" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="340" y="1340"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="parking_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="duration" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="parking_price_pk" type="pk-constr" table="public.parking_price">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="parking_status" layers="0" collapse-mode="2" max-obj-count="21" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="820" y="1120"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="parking_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="number" not-null="true">
+		<type name="character varying" length="20"/>
+	</column>
+	<column name="is_paid" not-null="true" default-value="FALSE">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="payment_method" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="price" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="duration" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="enter_count" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="leave_count" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="enter_image" default-value="NULL">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="leave_image" default-value="NULL">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="enter_at" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="leave_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="paid_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="payme_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="click_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="data" default-value="NULL">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="parking_status_pk" type="pk-constr" table="public.parking_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="date"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="parking_status_default" layers="0" collapse-mode="2" max-obj-count="21" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="840" y="1520"/>
+</table>
+
+<relationship name="parking_status_default_is_partition_of_parking_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#bfe12a"
+	 src-table="public.parking_status_default"
+	 dst-table="public.parking_status"/>
+
+<table name="region" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-420" y="40"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="name_uz" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="region_pk" type="pk-constr" table="public.region">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="restroom" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-120" y="1160"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="bazaar_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number" not-null="true">
+		<type name="character varying" length="20"/>
+	</column>
+	<column name="price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="restroom_pk" type="pk-constr" table="public.restroom">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="restroom_status" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-120" y="1500"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="restroom_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="is_paid" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="payment_method" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="price" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="duration" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="enter_at" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="leave_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="restroom_status_pk" type="pk-constr" table="public.restroom_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="enter_at"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="restroom_status_default" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="420" y="1600"/>
+</table>
+
+<relationship name="restroom_status_default_is_partition_of_restroom_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#9543c4"
+	 src-table="public.restroom_status_default"
+	 dst-table="public.restroom_status">
+	<expression> <![CDATA[FROM (value) TO (value)]]> </expression>
+</relationship>
+
+<table name="payme" layers="0" collapse-mode="2" max-obj-count="14" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1260" y="1420"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="order_type" not-null="true">
+		<type name="character" length="1"/>
+	</column>
+	<column name="order_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="create_order_id" not-null="true" default-value="0">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="create_order_nonce" not-null="true" default-value="0">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="payme_id" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="amount" not-null="true" default-value="0">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="state" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="reason" default-value="NULL">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="create_time" not-null="true" default-value="0">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="perform_time" not-null="true" default-value="0">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="cancel_time" not-null="true" default-value="0">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="payme_pk" type="pk-constr" table="public.payme">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="create_time"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="payme_default" layers="0" collapse-mode="2" max-obj-count="14" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1780" y="1400"/>
+</table>
+
+<relationship name="payme_default_is_partition_of_payme" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#faf4a1"
+	 src-table="public.payme_default"
+	 dst-table="public.payme"/>
+
+<table name="click" layers="0" collapse-mode="2" max-obj-count="12" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1280" y="1760"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="order_type" not-null="true">
+		<type name="character" length="1"/>
+	</column>
+	<column name="order_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="create_order_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="click_trans_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="click_paydoc_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="amount" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="prepare_time" not-null="true">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="complete_time" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="click_pk" type="pk-constr" table="public.click">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="prepare_time"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="click_default" layers="0" collapse-mode="2" max-obj-count="12" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1860" y="1780"/>
+</table>
+
+<relationship name="click_default_is_partition_of_click" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#b7184e"
+	 src-table="public.click_default"
+	 dst-table="public.click"/>
+
+<table name="shop_status" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1320" y="760"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="shop_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="is_occupied" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="rent_price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="occupied_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<constraint name="shop_status_pk" type="pk-constr" table="public.shop_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="date"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="shop_status_default" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1760" y="780"/>
+</table>
+
+<relationship name="shop_status_default_is_partition_of_shop_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#2dbaa3"
+	 src-table="public.shop_status_default"
+	 dst-table="public.shop_status"/>
+
+<table name="parking_camera" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="720" y="900"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="parking_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="role" not-null="true">
+		<type name="smallint" length="0"/>
+		<comment> <![CDATA[0 - enter, 1 - exit]]> </comment>
+	</column>
+	<column name="mac" not-null="true" default-value="NULL">
+		<type name="character varying" length="12"/>
+	</column>
+	<column name="token" not-null="true">
+		<type name="character varying" length="32"/>
+	</column>
+	<constraint name="parking_camera_pk" type="pk-constr" table="public.parking_camera">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="thing" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-720" y="720"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="name_uz">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="thing_pk" type="pk-constr" table="public.thing">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="thing_data" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-380" y="760"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="bazaar_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="thing_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="count" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="thing_data_pk" type="pk-constr" table="public.thing_data">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="thing_status" layers="0" collapse-mode="2" max-obj-count="15" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-500" y="1000"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="bazaar_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="thing_id" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="is_occupued" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="is_paid" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="payment_method" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="price" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="occupied_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="paid_at" default-value="NULL">
+		<type name="timestamptz" length="0"/>
+	</column>
+	<column name="payme_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="click_status" not-null="true" default-value="0">
+		<type name="smallint" length="0"/>
+	</column>
+	<constraint name="thing_status_pk" type="pk-constr" table="public.thing_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<partitioning type="RANGE">
+		<partitionkey>
+			<column name="id"/>
+		</partitionkey>
+ 		<partitionkey>
+			<column name="date"/>
+		</partitionkey>
+	</partitioning>
+</table>
+
+<table name="thing_status_default" layers="0" collapse-mode="2" max-obj-count="15" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-560" y="1380"/>
+</table>
+
+<relationship name="thing_status_default_is_partition_of_thing_status" type="relpart" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#84472c"
+	 src-table="public.thing_status_default"
+	 dst-table="public.thing_status"/>
+
+<table name="parking_whitelist" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="-180" y="200"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="region_id" default-value="NULL">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="district_id" default-value="NULL">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="bazaar_id" default-value="NULL">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="pattern" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<constraint name="parking_whitelist_pk" type="pk-constr" table="public.parking_whitelist">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="bazaar_district_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.district" table="public.bazaar">
+	<columns names="district_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="area_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.area">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="section_area_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.area" table="public.section">
+	<columns names="area_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="stall_section_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.section" table="public.stall">
+	<columns names="section_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="shop_section_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.section" table="public.shop">
+	<columns names="section_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="district_region_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.region" table="public.district">
+	<columns names="region_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="stall_status_stall_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.stall" table="public.stall_status">
+	<columns names="stall_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="shop_payment_shop_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.shop" table="public.shop_payment">
+	<columns names="shop_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.parking">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_price_parking_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.parking" table="public.parking_price">
+	<columns names="parking_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_status_parking_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.parking" table="public.parking_status">
+	<columns names="parking_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="restroom_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.restroom">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="restroom_status_restroom_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.restroom" table="public.restroom_status">
+	<columns names="restroom_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="shop_status_shop_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.shop" table="public.shop_status">
+	<columns names="shop_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_camera_parking_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.parking" table="public.parking_camera">
+	<columns names="parking_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="thing_data_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.thing_data">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="thing_data_thing_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.thing" table="public.thing_data">
+	<columns names="thing_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="thing_status_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.thing_status">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="thing_status_thing_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.thing" table="public.thing_status">
+	<columns names="thing_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_whitelist_region_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.region" table="public.parking_whitelist">
+	<columns names="region_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_whitelist_district_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.district" table="public.parking_whitelist">
+	<columns names="district_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="parking_whitelist_bazaar_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.bazaar" table="public.parking_whitelist">
+	<columns names="bazaar_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_area_bazaar" type="relfk" layers="0"
+	 src-table="public.area"
+	 dst-table="public.bazaar" reference-fk="area_bazaar_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_section_area" type="relfk" layers="0"
+	 src-table="public.section"
+	 dst-table="public.area" reference-fk="section_area_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_stall_section" type="relfk" layers="0"
+	 src-table="public.stall"
+	 dst-table="public.section" reference-fk="stall_section_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_shop_section" type="relfk" layers="0"
+	 src-table="public.shop"
+	 dst-table="public.section" reference-fk="shop_section_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_bazaar_region" type="relfk" layers="0"
+	 src-table="public.bazaar"
+	 dst-table="public.district" reference-fk="bazaar_district_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_stell_status_stall" type="relfk" layers="0"
+	 src-table="public.stall_status"
+	 dst-table="public.stall" reference-fk="stall_status_stall_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_shop_status_shop" type="relfk" layers="0"
+	 src-table="public.shop_payment"
+	 dst-table="public.shop" reference-fk="shop_payment_shop_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_parking_bazaar" type="relfk" layers="0"
+	 src-table="public.parking"
+	 dst-table="public.bazaar" reference-fk="parking_bazaar_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_parking_status_parking" type="relfk" layers="0"
+	 src-table="public.parking_status"
+	 dst-table="public.parking" reference-fk="parking_status_parking_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_parking_price_parking" type="relfk" layers="0"
+	 src-table="public.parking_price"
+	 dst-table="public.parking" reference-fk="parking_price_parking_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_district_region" type="relfk" layers="0"
+	 src-table="public.district"
+	 dst-table="public.region" reference-fk="district_region_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_restroom_bazaar" type="relfk" layers="0"
+	 src-table="public.restroom"
+	 dst-table="public.bazaar" reference-fk="restroom_bazaar_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_restroom_status_restroom" type="relfk" layers="0"
+	 src-table="public.restroom_status"
+	 dst-table="public.restroom" reference-fk="restroom_status_restroom_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_shop_status_shop1" type="relfk" layers="0"
+	 src-table="public.shop_status"
+	 dst-table="public.shop" reference-fk="shop_status_shop_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_thing_data_bazaar" type="relfk" layers="0"
+	 src-table="public.thing_data"
+	 dst-table="public.bazaar" reference-fk="thing_data_bazaar_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_thing_data_thing" type="relfk" layers="0"
+	 src-table="public.thing_data"
+	 dst-table="public.thing" reference-fk="thing_data_thing_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_thing_status_thing" type="relfk" layers="0"
+	 src-table="public.thing_status"
+	 dst-table="public.thing" reference-fk="thing_status_thing_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_thing_status_bazaar" type="relfk" layers="0"
+	 src-table="public.thing_status"
+	 dst-table="public.bazaar" reference-fk="thing_status_bazaar_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_parking_camera_parking" type="relfk" layers="0"
+	 src-table="public.parking_camera"
+	 dst-table="public.parking" reference-fk="parking_camera_parking_id_fk"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="-7.84042" y="-5.97432"/>
+	</label>
+</relationship>
+
+<relationship name="rel_parking_whitelist_region" type="relfk" layers="0"
+	 src-table="public.parking_whitelist"
+	 dst-table="public.region" reference-fk="parking_whitelist_region_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_parking_whitelist_district" type="relfk" layers="0"
+	 src-table="public.parking_whitelist"
+	 dst-table="public.district" reference-fk="parking_whitelist_district_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_parking_whitelist_bazaar" type="relfk" layers="0"
+	 src-table="public.parking_whitelist"
+	 dst-table="public.bazaar" reference-fk="parking_whitelist_bazaar_id_fk"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

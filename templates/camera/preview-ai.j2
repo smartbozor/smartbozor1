@@ -1,0 +1,39 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <div id="video-container">
+        <div class="text-center p-5">
+            <div class="spinner-border"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const con = document.querySelector("#video-container")
+            const img = document.createElement("img")
+            let added = false
+            img.classList.add("img-fluid")
+
+            function load() {
+                const preloader = new Image()
+                preloader.onload = function () {
+                    if (!added) {
+                        added = true
+                        con.innerHTML = ''
+                        con.appendChild(img)
+                    }
+                    img.src = preloader.src
+                    setTimeout(load, 1000)
+                }
+                preloader.onerror = function () {
+                    setTimeout(load, 1000)
+                }
+                preloader.src = "?image=true&" + Date.now()
+            }
+
+            load()
+        });
+    </script>
+{% endblock %}

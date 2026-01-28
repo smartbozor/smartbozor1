@@ -1,0 +1,56 @@
+{% extends 'layouts/auth.j2' %}
+
+{% macro status_link(status, s, title, total) %}
+    <a href="?status={{ s }}"
+       class="btn {% if status == s %}btn-primary text-white{% else %}btn-outline-primary{% endif %} py-1">
+        {{ title }} {% if total > 0 %}[{{ total }}]{% endif %}
+    </a>
+{% endmacro %}
+
+{% block page_content %}
+    <div class="btn-group btn-group-sm mb-3">
+        {{ status_link(status, -2, _("Barchasini"), status_total.values()|sum) }}
+        {% for s, title in [(-1, _("Noto'g'ri")), (0, _("Yangi")), (1, _("Belgilangan")), (2, _("Tekshirilgan")), (3, _("Dataset yaratilsan"))] %}
+            {{ status_link(status, s, title, status_total.get(s, 0)) }}
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        <label class="d-block">
+            Camera {{ found.camera_id }}
+            <select class="form-control" id="id_camera_list">
+                <option value="0">-</option>
+                {% for cam in cameras %}
+                    <option value="{{ cam.id }}" {% if cam.id == camera_id %}selected="selected"{% endif %}>
+                        Camera {{ cam.id }} - {{ camera_total.get(cam.id, 0) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+
+    {% if found %}
+        {% if render_image %}
+            <img src="data:image/jpg;base64,{{ render_image }}" alt="" class="img-fluid"/>
+        {% endif %}
+        <div class="mt-3 text-center">
+            <a href="?status={{ status }}&id={{ found.id }}&camera={{ camera_id }}&{{ ms }}" class="btn btn-primary">{{ _("Keyingisi") }}</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info">{{ _("Tanlangan filtr bo'yicha rasm topiladi.") }}</div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+	{{ super() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const camEl = document.querySelector("#id_camera_list")
+            camEl.addEventListener("change", function (e) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("camera", e.currentTarget.value);
+                window.location.href = url.toString();
+            })
+        })
+    </script>
+{% endblock %}

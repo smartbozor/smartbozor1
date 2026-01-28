@@ -1,0 +1,23 @@
+{% extends 'layouts/auth.j2' %}
+
+{% set current_month = months | selectattr("n", "equalto", n) | first %}
+{% set months_dropdown %}
+{% include 'include/months-dropdown.j2' %}
+{% endset %}
+
+{% block page_content %}
+    <div class="d-flex mb-3 align-items-center">
+        <strong>{{ range_title }}</strong>
+        <div class="ms-auto">{{ months_dropdown }}</div>
+    </div>
+
+    <div>
+        <canvas id="id_scan" style="height: 400px"></canvas>
+    </div>
+    <script>window.init_chart = [["id_scan", {{ data|tojson }}]]</script>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ static("js/chart-init.min.js") }}"></script>
+{% endblock %}

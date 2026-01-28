@@ -1,0 +1,56 @@
+{% if price > 0 %}
+    <table class="table">
+        <tbody>
+        <tr>
+            <th class="bg-primary text-white w-50">{{ _("To'lov summasi") }}</th>
+            <td>{{ price|som }}</td>
+        </tr>
+        {% if not object.fee_included %}
+            {% if object.fee_price > 0 %}
+                <tr>
+                    <th class="bg-primary text-white w-50">{{ _("Xizmat haqi (o'zgarmas)") }}</th>
+                    <td>{{ object.fee_price|som }}</td>
+                </tr>
+            {% endif %}
+            {% if object.fee_percent > 0 %}
+                <tr>
+                    <th class="bg-primary text-white w-50">{{ _("Xizmat haqi (%%)") }}</th>
+                    <td>{{ object.fee_percent }}% ({{ fee_percent_price|som }})</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+        </tbody>
+    </table>
+
+    <div class="text-center">{{ _("JAMI TO'LOV") }}</div>
+    <div class="text-center fs-1">
+        {{ total_price|som }}
+    </div>
+    {% if object.price == 0 %}
+        <div class="text-center">
+            <a href="?">{{ _("Boshqa summa kiritish") }}</a>
+        </div>
+    {% endif %}
+
+    <label class="d-block mt-5 text-center">
+        <input type="checkbox" onchange="document.querySelector('#id_btn').classList.toggle('d-none', !this.checked)">
+        {{ _("Tizimdan <a href='/public-offer' target='_blank'>foydalanish shartlari</a>ga roziman") }}
+    </label>
+    <div class="d-flex justify-content-center align-items-center flex-wrap gap-4 mt-3 d-none" id="id_btn">
+        <a class="btn click-btn px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+           href="https://my.click.uz/services/pay?service_id={{ object.point.click_service_id }}&merchant_id={{ object.point.click_merchant_id }}&amount={{ total_price }}&transaction_param=x-{{ object.id }}-{{ price }}-{{ nonce }}&return_url={{ request.build_absolute_uri() }}">
+            <img src="{{ static("img/click.svg") }}" style="height: 16px" alt="Click"/>
+        </a>
+    </div>
+{% else %}
+    <form method="get" action="" autocomplete="off">
+        <label class="d-block mb-3">
+            <input type="text" inputmode="numeric" name="price" class="form-control w-100"
+                   placeholder="{{ _("To'lov summasini kiriting") }}"/>
+        </label>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">{{ _("To'lov turini tanlash") }}</button>
+        </div>
+    </form>
+{% endif %}

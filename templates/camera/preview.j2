@@ -1,0 +1,19 @@
+{% extends 'layouts/auth.j2' %}
+
+{% block page_content %}
+    <div class="video-container">
+        <div class="text-center p-5">
+            <div class="spinner-border"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="module" src="{{ static("vendor/go2rts/video-stream.min.js") }}?{{ STATIC_VERSION }}"></script>
+    <script data-stream-host="{{ stream_host|default("", true) }}" src="{{ static("js/camera-stream.min.js") }}?{{ STATIC_VERSION }}"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        init_stream("{{ (object.bazaar_id ~ ":" ~ object.device_sn)|sign }}")
+    })
+    </script>
+{% endblock %}

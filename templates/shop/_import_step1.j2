@@ -1,0 +1,76 @@
+{% macro accordion(id, title, content) %}
+    <div class="accordion accordion-flush">
+        <div class="accordion-item border-bottom">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#{{ id }}">
+                    {{ title }}
+                </button>
+            </h2>
+            <div id="{{ id }}" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <table class="table table-striped table-bordered table-hover m-0">
+                        <tbody>
+                        {{ content }}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro simple_list(list) %}
+    {% for n, o, p in list %}
+        <tr>
+            <td>{{ n }}</td>
+            <td>{{ o }}</td>
+            <td>{% if p is number %}{{ p|som }}{% else %}{{ p }}{% endif %}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro update_list(list) %}
+    {% for shop, o, p in list %}
+        <tr>
+            <td>{{ shop.number }}</td>
+            <td>{% if o.lower() != shop.owner.strip().lower() %}{{ shop.owner }}
+                &raquo; {% endif %}{{ o }}</td>
+            <td>{% if p != shop.rent_price %}{{ shop.rent_price|som }} &raquo; {% endif %}{{ p|som }}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro delete_list(list) %}
+    {% for shop in list %}
+        <tr>
+            <td>{{ shop.number }}</td>
+            <td>{{ shop.owner }}</td>
+            <td>{{ shop.rent_price|som }}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% if shop_wrong %}
+    {{ accordion("id-import-wrong", _("Noto'g'ri kiritilgam managazinlar - {0} ta").format(shop_wrong|length), simple_list(shop_wrong)) }}
+{% endif %}
+
+{% if duplicates %}
+    {{ accordion("id-import-duplicates", _("Dublika magazin raqamlari - {0} ta").format(duplicates|length), simple_list(duplicates)) }}
+{% endif %}
+
+{% if shop_insert %}
+    {{ accordion("id-import-insert", _("Yangi qo'shiladigan magazinlar - {0} ta").format(shop_insert|length), simple_list(shop_insert)) }}
+{% endif %}
+
+{% if shop_update %}
+    {{ accordion("id-import-update", _("Tahrirlanadigan magazinlar - {0} ta").format(shop_update|length), update_list(shop_update)) }}
+{% endif %}
+
+{% if shop_delete %}
+    {{ accordion("id-import-delete", _("Excelda topilmagan magazinlar - {0} ta").format(shop_delete|length), delete_list(shop_delete)) }}
+{% endif %}
+
+{% if shop_skip %}
+    {{ accordion("id-import-skip", _("O'zgarishsiz qolgan magazinlar - {0} ta").format(shop_skip|length), delete_list(shop_skip)) }}
+{% endif %}

@@ -1,0 +1,94 @@
+{% extends 'layouts/base.j2' %}
+
+{% block extra_style %}
+    <style>
+        .payme-button input {
+            height: 48px !important;
+        }
+    </style>
+{% endblock %}
+
+{% set cash_allowed = user.is_authenticated and bazaar.is_allow_cash and perms.rent.view_thing and perms.rent.add_thingstatus and bazaar.id in ALLOWED_BAZAAR_ID and price > 0 %}
+
+{% block content %}
+    <div class="container pt-4 px-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="shadow bg-white rounded-3 p-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-uppercase">{{ bazaar }}</h4>
+                        <hr/>
+                        {{ bootstrap_messages() }}
+
+                        <div class="text-uppercase">
+                            {{ thing_data.thing }}
+                        </div>
+                        <h1>{{ number }}</h1>
+                        <div class="text-center">
+                            <h2 class="d-inline-block bg-primary text-white py-2 px-3 rounded-3">{{ price|som }}</h2>
+                        </div>
+                    </div>
+                    {% if not bazaar.is_working_day %}
+                        <div class="alert alert-danger text-center m-0">{{ _("Bugun bozor ishlamaydi") }}</div>
+                    {% elif is_paid %}
+                        <div class="alert alert-success text-center m-0">{{ _("Ushbu {0} uchun to'lov qabul qilingan. To'lov turi \"{1}\"").format(
+                            thing_data.thing.name.lower(),
+                            payment_method
+                        ) }}</div>
+                    {% elif payment_progress > 0 %}
+                        <div class="alert alert-warning text-center m-0">{{ _("{} orqali to'lov qabul qilinmoqda...").format(payment_progress_title) }}</div>
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
+                            {% if cash_allowed %}
+                                <button class="btn btn-cash fs-5 confirm px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                        data-bs-toggle="modal" data-bs-target="#id-cash-modal"
+                                        data-title="{{ thing_data.thing }} № {{ number }}"
+                                        data-btn_title="{{ _("{0} so'm to'landi").format(price|intcomma) }}"
+                                        data-url="{{ url("rent:list", bazaar.id, thing_data.thing_id) }}"
+                                        data-number="{{ number }}">
+                                    <i class="bi bi-cash me-2"></i>
+                                    {{ _("Naqd") }}
+                                </button>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_click and price > 0 %}
+                                <a class="btn click-btn px-4 py-0 d-flex align-items-center justify-content-center rounded-1"
+                                   href="https://my.click.uz/services/pay?service_id={{ bazaar.click_service_id }}&merchant_id={{ bazaar.click_merchant_id }}&amount={{ price }}&transaction_param=r-{{ bazaar.id * (10 ** 8) + thing_data.thing_id * (10 ** 4) + number }}&return_url={{ request.build_absolute_uri() }}">
+                                    <img src="{{ static("img/click.svg") }}" style="height: 16px" alt="Click"/>
+                                </a>
+                            {% endif %}
+
+                            {% if bazaar.is_allow_payme and price > 0 %}
+                                <form id="form-payme" method="POST" action="https://checkout.paycom.uz/"
+                                      style="height: 48px;">
+                                    <input type="hidden" name="merchant" value="{{ bazaar.payme_merchant }}">
+                                    <input type="hidden" name="account[order_id]" value="r-{{ bazaar.id }}-{{ thing_data.thing_id }}-{{ number }}">
+                                    <input type="hidden" name="amount" value="{{ price * 100 }}">
+                                    <input type="hidden" name="lang" value="uz">
+                                    <input type="hidden" name="button" data-type="png" value="colored">
+                                    <div class="payme-button"></div>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if cash_allowed %}
+        {% include "rent/_cash_modal.j2" %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if bazaar.is_allow_payme and price > 0 %}
+        <script src="https://cdn.paycom.uz/integration/js/checkout.min.js"></script>
+        <script>document.addEventListener("DOMContentLoaded", () => {
+            Paycom.Button('#form-payme', '.payme-button')
+        })</script>
+    {% endif %}
+    {% if cash_allowed %}
+        <script src="{{ static("js/cash-modal.min.js") }}?{{ STATIC_VERSION }}"></script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'layouts/base.j2' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <table class="table table-striped table-hover table-bordered">
+        <thead>
+        <tr>
+            <td class="bg-dark text-white">ID</td>
+            <td class="bg-dark text-white">{{ _("Bozor") }}</td>
+            <td class="bg-dark text-white">Username</td>
+            <td class="bg-dark text-white">IP</td>
+            <td class="bg-dark text-white">{{ _("Dastur versiyasi") }}</td>
+            <td class="bg-dark text-white">{{ _("Fayllar soni") }}</td>
+            <td class="bg-dark text-white">{{ _("Kameralar soni") }}</td>
+            <td class="bg-dark text-white">{{ _("AI state soni") }}</td>
+            <td class="bg-dark text-white">{{ _("Onlayn") }}</td>
+            <td class="bg-dark text-white" style="width: 1%"></td>
+        </tr>
+        </thead>
+            <tbody>
+            {% for row in result %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row }}</td>
+                    <td>{% if row.server_user %}{{ row.server_user }}{% else %}-{% endif %}</td>
+                    <td>{% if row.server_ip %}{{ row.server_ip }}{% else %}-{% endif %}</td>
+                    <td>{{ row.app_version }}</td>
+                    <td class="text-center">{{ row.files_count }}</td>
+                    <td class="text-center">{{ row.cameras_count }}</td>
+                    <td class="text-center">{{ row.states_count }}</td>
+                    <td class="text-center">{{ row.is_online|yesno("🟢,🔴") }}</td>
+                    <td class="text-nowrap">
+                        <a href="{{ url("main:bazaar-test-ssh", row.id) }}"
+                           class="btn btn-primary btn-sm py-1 px-3 text-white">Test SSH</a>
+                        <a href="{{ url("main:bazaar-test-sbc", row.id) }}"
+                           class="btn btn-primary btn-sm py-1 px-3 text-white">Test SBC</a>
+                        <a href="{{ url("main:bazaar-test-discovery", row.id) }}"
+                           class="btn btn-primary btn-sm py-1 px-3 text-white">Run SADP</a>
+                        <a href="{{ url("main:bazaar-test-run-snapshot", row.id) }}"
+                           class="btn btn-primary btn-sm py-1 px-3 text-white">Run Snapshot</a>
+                        <a href="{{ url("main:bazaar-data", row.id, "") }}"
+                           class="btn btn-primary btn-sm py-1 px-3 text-white">Data</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
