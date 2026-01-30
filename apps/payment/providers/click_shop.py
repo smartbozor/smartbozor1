@@ -16,7 +16,7 @@ class ClickShop(ProviderShop):
         cls.check_bazaar(request, shop)
 
         today = timezone.localtime().date()
-        start = today - datetime.timedelta(days=2)
+        start = today.replace(day=1)
 
         shop_payment, __ = ShopPayment.objects.select_for_update().get_or_create(
             shop_id=shop.id,

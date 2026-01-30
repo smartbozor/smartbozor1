@@ -316,27 +316,20 @@ class ReportTotalRevenueView(NormalizeDataMixin, LoginRequiredMixin, PermissionR
             ).values("bazaar_id", "thing_id", "pm", "total")
         }
 
-        start, end = cls.date_range(data, use_utc=False)
-
-        context["parking"] = {row["bazaar_id"]: row for row in ParkingStatus.objects.filter(
-                parking__bazaar_id__in=bazaars_id,
-                paid_at__gte=start,
-                paid_at__lt=end,
-            ).values(
-                bazaar_id=F("parking__bazaar_id"),
-            ).annotate(
-                free_count=Count("id", filter=Q(price=0), distinct=True),
-                paid_count=Count("id", filter=Q(price__gt=0), distinct=True),
-                unknown_count=Count("id", filter=Q(number=ParkingStatus.LICENSE_PLATE_UNKNOWN), distinct=True),
-                total=Sum("price"),
-                total_paid_cash=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_CASH), then=F("price")),default=0)),
-                total_paid_click=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_CLICK), then=F("price")),default=0)),
-                total_paid_payme=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_PAYME), then=F("price")),default=0)),
-                total_paid=Sum(Case(When(is_paid=True, then=F("price")),default=0)),
-            ).values(
-                "bazaar_id","free_count","paid_count","unknown_count","total","total_paid","total_paid_cash","total_paid_click","total_paid_payme",
-            )
-        }
+        context["parking"] = {row["bazaar_id"]: row for row in MonthFilter(data, queryset=ParkingStatus.objects.filter(
+            parking__bazaar_id__in=bazaars_id
+        )).qs.values(
+            bazaar_id=F("parking__bazaar_id"),
+        ).annotate(
+            free_count=Count("id", filter=Q(price=0), distinct=True),
+            paid_count=Count("id", filter=Q(price__gt=0), distinct=True),
+            unknown_count=Count("id", filter=Q(number=ParkingStatus.LICENSE_PLATE_UNKNOWN), distinct=True),
+            total=Sum("price"),
+            total_paid_cash=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_CASH), then=F("price")), default=0)),
+            total_paid_click=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_CLICK), then=F("price")), default=0)),
+            total_paid_payme=Sum(Case(When(Q(is_paid=True) & Q(payment_method=Bazaar.PAYMENT_METHOD_PAYME), then=F("price")), default=0)),
+            total_paid=Sum(Case(When(is_paid=True, then=F("price")), default=0)),
+        ).values("bazaar_id", "free_count", "paid_count", "unknown_count", "total", "total_paid", "total_paid_cash", "total_paid_click", "total_paid_payme")}
 
         context["months"] = months
         context["n"] = data["n"]
